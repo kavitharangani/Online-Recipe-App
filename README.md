@@ -1,36 +1,80 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Flavorly — Cooking Recipe App
 
-## Getting Started
+A full-stack recipe web app: register, log in, share recipes with photos, browse and search,
+rate and review, save favourites, plan meals for the week, and build a shopping list.
 
-First, run the development server:
+Built with **Next.js 16** (App Router, Server Actions), **React 19**, **Tailwind CSS 4** and
+**SQLite** (via `node-sqlite3-wasm`, so there is nothing native to compile).
+
+## Getting started
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open http://localhost:3000. On first run the database is created at `data/flavorly.db` and filled
+with demo categories, recipes, reviews and these accounts:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+| Role  | Email                 | Password    |
+| ----- | --------------------- | ----------- |
+| Admin | `admin@flavorly.com`  | `Admin@123` |
+| User  | `nimali@flavorly.com` | `Demo@123`  |
+| User  | `kasun@flavorly.com`  | `Demo@123`  |
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+To start over with fresh demo data, stop the server and delete the `data/` folder.
 
-## Learn More
+### Environment
 
-To learn more about Next.js, take a look at the following resources:
+Sessions are signed with `SESSION_SECRET`. Locally a development fallback is used if it isn't set; to set
+your own, create `.env.local` with `SESSION_SECRET=...`. In production it is **required** — use a long random
+value, for example:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```bash
+node -e "console.log(require('crypto').randomBytes(32).toString('base64'))"
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Features
 
-## Deploy on Vercel
+**Accounts**
+- Register / log in / log out with hashed passwords (bcrypt) and signed, http-only session cookies
+- Protected pages redirect to login and come back afterwards
+- Settings: edit name, email, bio and profile photo; change password; delete account
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+**Recipes**
+- Create, edit and delete recipes with photo upload, category, cuisine, difficulty, prep/cook time,
+  servings, calories, tags, tips, ingredients (fractions like `1 1/2` supported) and steps with optional timers
+- Browse with search (title, description, tags, cuisine, ingredients), filters (category, difficulty,
+  cuisine, total time), sorting (newest, top rated, most viewed, most saved, quickest) and pagination
+- Recipe page: servings scaler, ingredient checklist, step checklist with countdown timers, print, share,
+  related recipes, view counter
+- **Cook mode**: full-screen, step-by-step view with large timers, keyboard navigation and screen wake lock
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+**Community**
+- 1–5 star ratings and reviews with rating breakdown
+- Favourites, public profiles with stats, follow other cooks
+- Notifications for new reviews, saves, followers and new recipes from cooks you follow
+
+**Planning**
+- Weekly meal planner (breakfast, lunch, dinner, snack) with week navigation
+- Shopping list: add from a recipe (scaled, skipping ingredients you ticked), from a whole planned week,
+  or by hand; tick off, group by recipe or combine duplicates, copy, print, clear
+
+**Admin panel** (`/admin`)
+- Site stats, recipes per category, newest members, recent reviews
+- Manage users (promote/demote admin, delete), recipes (feature on home page, edit, delete) and categories
+
+**Other**
+- Light/dark theme toggle, responsive layout, custom 404 and error pages
+
+## Project structure
+
+```
+src/
+  actions/      Server Actions (auth, recipes, planner, shopping, account, admin)
+  app/          Routes (pages, layouts, route handlers)
+  components/   Shared UI
+  lib/          Database, schema & seed, session/auth, queries, helpers
+  proxy.ts      Optimistic auth redirects (every action/page re-checks on the server)
+data/           SQLite database and uploaded images (created at runtime, git-ignored)
+```
