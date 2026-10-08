@@ -1,0 +1,14 @@
+services:
+  - type: web
+    name: online-recipe-app
+    runtime: node
+    plan: free
+    buildCommand: npm ci && npm run build
+    startCommand: npm start
+    healthCheckPath: /
+    envVars:
+      - key: NODE_VERSION
+        value: "22"
+      # Signs login sessions; Render generates a random value on first deploy.
+      - key: SESSION_SECRET
+        generateValue: true

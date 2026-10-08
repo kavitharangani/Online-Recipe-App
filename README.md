@@ -34,6 +34,14 @@ value, for example:
 node -e "console.log(require('crypto').randomBytes(32).toString('base64'))"
 ```
 
+## Deploy
+
+[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/kavitharangani/Online-Recipe-App)
+
+`render.yaml` sets up a free Node web service with a generated `SESSION_SECRET`. On the free plan the
+service sleeps after 15 minutes without visits (the first visit then takes about a minute), and its disk is
+temporary, so the database resets to the demo data whenever the service restarts.
+
 ## Features
 
 **Accounts**
